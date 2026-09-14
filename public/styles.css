@@ -1,0 +1,7 @@
+body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:20px;background:#0f1724;color:#e6eef8}
+main{max-width:900px;margin:0 auto}
+nav a{display:inline-block;margin-right:12px;color:#9ec7ff}
+.card{background:#122033;padding:12px;border-radius:6px}
+.videos{height:80vh;overflow-y:auto}
+video{width:100%;display:block;margin-bottom:12px}
+form input, form button{padding:8px;margin:6px 0;display:block}

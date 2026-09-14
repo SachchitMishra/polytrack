@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Videos</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <main>
+    <h2>Videos</h2>
+    <div class="videos" id="feed"></div>
+  </main>
+  <script>
+  async function load(){
+    const r = await fetch('/api/videos');
+    const data = await r.json();
+    const feed = document.getElementById('feed');
+    feed.innerHTML = '';
+    data.videos.forEach(v=>{
+      const el = document.createElement('div');
+      el.className='card';
+      const vid = document.createElement('video');
+      vid.controls = true;
+      vid.src = '/videos/' + encodeURIComponent(v);
+      vid.setAttribute('playsinline','');
+      vid.preload = 'metadata';
+      el.appendChild(vid);
+      feed.appendChild(el);
+    });
+  }
+  load();
+  </script>
+</body>
+</html>

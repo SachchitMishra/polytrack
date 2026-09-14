@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <main>
+    <h2>Admin Panel</h2>
+    <div id="status"></div>
+    <section class="card">
+      <h3>Add User</h3>
+      <form id="add">
+        <input name="username" placeholder="SRM-1(ST)####" />
+        <input name="password" placeholder="password" />
+        <button>Create</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3>Ban / Suspend User</h3>
+      <form id="ban">
+        <input name="username" placeholder="username" />
+        <input name="hours" placeholder="hours (0 to unban)" />
+        <input name="reason" placeholder="reason" />
+        <button>Apply</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3>Upload Video (.mov)</h3>
+      <form id="upload" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".mov" />
+        <button>Upload</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3>Users</h3>
+      <pre id="users"></pre>
+    </section>
+  </main>
+  <script>
+  async function check(){
+    const r = await fetch('/api/me');
+    const data = await r.json();
+    if (!data.user || !data.user.is_admin) {
+      document.getElementById('status').textContent='Admin login required';
+      return;
+    }
+    document.getElementById('status').textContent='Hello ' + data.user.username;
+    const u = await fetch('/api/users');
+    const list = await u.json();
+    document.getElementById('users').textContent = JSON.stringify(list.users, null, 2);
+  }
+  check();
+
+  document.getElementById('add').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const res = await fetch('/api/admin/add-user', {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({username:fd.get('username'),password:fd.get('password')})});
+    if (res.ok) { alert('created'); check(); } else alert('error');
+  });
+
+  document.getElementById('ban').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const body = { username: fd.get('username'), hours: fd.get('hours'), reason: fd.get('reason') };
+    const res = await fetch('/api/admin/ban', {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+    if (res.ok) { alert('updated'); check(); } else { const d=await res.json(); alert('error:'+d.error); }
+  });
+
+  document.getElementById('upload').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const res = await fetch('/api/admin/upload', {method:'POST', body: fd});
+    if (res.ok) { alert('uploaded'); } else alert('upload failed');
+  });
+  </script>
+</body>
+</html>
